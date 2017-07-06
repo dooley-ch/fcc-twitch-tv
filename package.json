@@ -1,0 +1,19 @@
+{
+  "name": "twitch-tv",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.html",
+  "scripts": {
+    "start": "browser-sync start --server --files './' --browser 'FirefoxDeveloperEdition'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/codesurge-xyz/fcc-twitch-tv.git"
+  },
+  "author": "James Dooley",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/codesurge-xyz/fcc-twitch-tv/issues"
+  },
+  "homepage": "https://github.com/codesurge-xyz/fcc-twitch-tv#readme"
+}

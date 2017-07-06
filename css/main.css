@@ -1,0 +1,19 @@
+.titlePanel {
+    margin-top: 30px;
+}
+
+.inputPanel {
+    margin-top: 30px;
+}
+
+.randomSearchPanel {
+    margin-top: 15px;
+}
+
+.resultsPanel {
+    margin-top: 25px;
+}
+
+.searchmatch {
+    font-style: bold;
+}
