@@ -1,19 +1,32 @@
-.titlePanel {
-    margin-top: 30px;
+.background-red {
+    background-color: red;
 }
 
-.inputPanel {
-    margin-top: 30px;
+.background-rosy-brown {
+    background-color: rosybrown;
 }
 
-.randomSearchPanel {
-    margin-top: 15px;
+.background-royal-blue {
+    background-color: royalblue;
 }
 
-.resultsPanel {
-    margin-top: 25px;
+.background-yellow {
+    background-color: yellow;
 }
 
-.searchmatch {
-    font-style: bold;
+.background-yellow-green {
+    background-color: yellowgreen;
 }
+
+.background-blue {
+    background-color: blue;
+}
+
+.background-blue-violet {
+    background-color: blueviolet;
+}
+
+.background-pink {
+    background-color: pink;
+}
+
