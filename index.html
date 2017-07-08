@@ -1,28 +1,77 @@
 <!doctype html>
-<html class="no-js" lang="">
-    <head>
-        <meta charset="utf-8">
-        <meta http-equiv="x-ua-compatible" content="ie=edge">
-        <title>TwitchTV Info</title>
-        <meta name="description" content="Demonstrates the use of the TwitchTV API">
-        <meta name="viewport" content="width=device-width, initial-scale=1">
+<html>
 
-        <link rel="stylesheet" href="css/metro.min.css">
-        <link rel="stylesheet" href="css/metro-responsive.min.css">
-        <link rel="stylesheet" href="css/metro-icons.min.css">
-        <link rel="stylesheet" href="css/metro-schemes.min.css">
-        <link rel="stylesheet" href="css/main.css">
-    </head>
-    <body>
-        <header>    
-        </header>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>TwitchTV Info</title>
+    <meta name="description" content="Demonstrates the use of the TwitchTV API">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <section>  
-        </section>
+    <link rel="stylesheet" href="css/semantic.min.css">
+    <link rel="stylesheet" href="css/main.css">
+</head>
 
-        <footer>
-        </footer>
+<body>
+    <header class="ui container">
+        <h1>Twitter Monitor</h1>
+        <div class="ui vertically divided stackable grid">
+            <div class="row padding-bottom-0">
+                <div class="three wide column">
+                    <div class="ui fluid floating labeled icon dropdown button">
+                        <i class="filter icon"></i>
+                        <span class="text">Filter</span>
+                        <div class="menu">
+                            <div class="header">
+                            <i class="tags icon"></i>
+                            Filter by tag
+                            </div>
+                            <div class="item">
+                            Important
+                            </div>
+                            <div class="item">
+                            Announcement
+                            </div>
+                            <div class="item">
+                            Discussion
+                            </div>
+                        </div>
+                    </div>              
+                </div>
+                <div class="three wide right floated column">
+                    <div class="ui search">
+                        <div class="ui fluid icon input">
+                            <input class="prompt" type="text" placeholder="Search channels...">
+                            <i class="search icon"></i>
+                        </div>
+                        <div class="results">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="column">
+                </div>
+            </div>
+        </div>
+     </header>
 
-        <script data-main="js/main" src="js/require.js"></script>
-    </body>
+    <section>
+    </section>
+    
+    <footer class="ui container">
+        <div class="ui divider"></div>
+        <div class="ui stackable grid">
+            <div class="three wide column">
+                <button class="ui fluid positive basic button">
+                    <i class="add circle icon"></i>
+                    Add Channel
+                </button>
+            </div>
+        </div>        
+    </footer>
+
+    <script data-main="js/main" src="js/require.js"></script>
+</body>
+
 </html>

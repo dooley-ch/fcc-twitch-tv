@@ -2,12 +2,16 @@ requirejs.config({
     shim : {
         "underscore": {
             exports: "_"
-        }        
+        },
+        semantic: {
+            deps : ["jquery"]
+        }
     },
 
     paths: {
         jquery: "vendor/jquery-3.2.1.min",
         underscore: "vendor/underscore-1.8.3.min",
+        semantic: "vendor/semantic.min"
     }
 });
 
@@ -16,10 +20,10 @@ define("app", function (require, exports) {
 
     var $ = require("jquery");
     var _ = require("underscore");
+
+    require("semantic");
+    
     var keys = require("keys");
-
-    require("metro");
-
     var twitchTV = require("twitch-tv-api");
     var repo = require("repository");
 
@@ -94,7 +98,9 @@ define("app", function (require, exports) {
 
         $("#refresh-button").click(function () {
             setTimeout(_refreshChannel, 250);
-        });       
+        });      
+
+        $("#dropMenu").dropdown(); 
     }
 
     exports.init = function () {
@@ -105,4 +111,6 @@ define("app", function (require, exports) {
 requirejs(["app"], function (app) {
     "use strict";
     app.init();
+
+
 });
