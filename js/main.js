@@ -2,16 +2,12 @@ requirejs.config({
     shim : {
         "underscore": {
             exports: "_"
-        },        
-        metro: {
-            deps: ["jquery"]
-        }
+        }        
     },
 
     paths: {
         jquery: "vendor/jquery-3.2.1.min",
         underscore: "vendor/underscore-1.8.3.min",
-        metro: "vendor/metro.min"
     }
 });
 
@@ -26,6 +22,18 @@ define("app", function (require, exports) {
 
     var twitchTV = require("twitch-tv-api");
     var repo = require("repository");
+
+    function _addChannel() {
+        alert("Add Channel");
+    }
+
+    function _removeChannel() {
+        alert("Remove Channel");
+    }
+    
+    function _refreshChannel() {
+        alert("Refresh Channels");
+    }
 
     /**
      * This funtion initializes the application 
@@ -51,6 +59,23 @@ define("app", function (require, exports) {
             console.log(errorMessage);
         }, function (key) {
             twitchTV.init(key);
+            // twitchTV.searchForChannels("freecodecamp", function (error) {
+            //     console.log(error); }, function (data) {
+            //     console.log(data);});
+
+            // twitchTV.getChannelInfo("riotgames", function (error) {
+            //     console.log(error);
+            // }, function(data) {
+            //     console.log(data);
+            // });
+
+            // twitchTV.getStreamInfo("OgamingSC2", function (error) {
+            //     console.log(error);
+            // }, function(data) {
+            //     if (data) {
+            //         console.log(data);
+            //     }
+            // });
         });
 
         // var channelStatus = twitchTV.getChannelStatus("riotgames");
@@ -58,6 +83,18 @@ define("app", function (require, exports) {
 
         // var channelInfo = twitchTV.getChannelInfo("riotgames");
         // console.log(channelInfo);
+
+        $("#add-channel-button").click(function () {
+            setTimeout(_addChannel, 250);
+        });
+
+        $("#delete-channel-button").click(function () {
+            setTimeout(_removeChannel, 250);
+        });
+
+        $("#refresh-button").click(function () {
+            setTimeout(_refreshChannel, 250);
+        });       
     }
 
     exports.init = function () {
