@@ -64,6 +64,24 @@ define("repository", function (require, exports) {
         return defaultList;
     }
 
+    
+    /**
+     * This function converts the standard list of channels into a tuype suitable for use
+     * in the search input control
+     * 
+     * @returns {Array} - list of channels
+     */
+    function _getSearchableChannelList() {
+        var searchList = [];
+        var list = _getChannelList();
+
+        _.each(list, function (item) {
+            searchList.push({ title: item});
+        });
+
+        return searchList;
+    }
+
     /**
      * This function adds a channel to the list in local storage
      * 
@@ -116,6 +134,10 @@ define("repository", function (require, exports) {
 
     exports.getChannelList = function () {
         return _getChannelList();
+    };
+
+    exports.getSearchableChannelList = function () {
+        return _getSearchableChannelList();
     };
 
     exports.saveChannelList = function (list, fail) {

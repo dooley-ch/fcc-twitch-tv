@@ -27,16 +27,16 @@ define("app", function (require, exports) {
     var twitchTV = require("twitch-tv-api");
     var repo = require("repository");
 
-    function _addChannel() {
-        alert("Add Channel");
+    function _showSingleCard(name) {
+        alert(name);
     }
 
-    function _removeChannel() {
-        alert("Remove Channel");
+    function _changeFilter(filter) {
+        alert("Change filter: " + filter);
     }
-    
-    function _refreshChannel() {
-        alert("Refresh Channels");
+
+    function _getNewChannelFromUser() {
+        alert("Get new channel");
     }
 
     /**
@@ -88,19 +88,29 @@ define("app", function (require, exports) {
         // var channelInfo = twitchTV.getChannelInfo("riotgames");
         // console.log(channelInfo);
 
-        $("#add-channel-button").click(function () {
-            setTimeout(_addChannel, 250);
+        // Set up filter
+        $("#filterMenu").dropdown({
+            action: "activate",
+            onChange: function (value) {
+                _changeFilter(value);
+            }
+        }); 
+
+        // Setup search
+        var channels = repo.getSearchableChannelList();
+        $("#searchInput").search({
+            source : channels,
+            searchFields   : [ "title"],
+            searchFullText: false,
+            onSelect: function (result) {
+                _showSingleCard(result.title);
+            }
         });
 
-        $("#delete-channel-button").click(function () {
-            setTimeout(_removeChannel, 250);
+        // Setup the add channel button
+        $("#addChannelButton").click(function (){
+            _getNewChannelFromUser();
         });
-
-        $("#refresh-button").click(function () {
-            setTimeout(_refreshChannel, 250);
-        });      
-
-        $("#dropMenu").dropdown(); 
     }
 
     exports.init = function () {

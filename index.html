@@ -14,32 +14,32 @@
 
 <body>
     <header class="ui container">
-        <h1>Twitter Monitor</h1>
+        <h1 class="appTitle">TwitchTV Monitor</h1>
         <div class="ui vertically divided stackable grid">
             <div class="row padding-bottom-0">
                 <div class="three wide column">
-                    <div class="ui fluid floating labeled icon dropdown button">
+                    <div id="filterMenu" class="ui fluid floating labeled icon dropdown button">
                         <i class="filter icon"></i>
-                        <span class="text">Filter</span>
-                        <div class="menu">
+                        <span class="text">All</span>
+                            <div class="menu">
                             <div class="header">
-                            <i class="tags icon"></i>
-                            Filter by tag
+                                <i class="linkify icon"></i>
+                                Filter by Status
                             </div>
                             <div class="item">
-                            Important
+                                All 
                             </div>
                             <div class="item">
-                            Announcement
+                                Online
                             </div>
                             <div class="item">
-                            Discussion
+                                Offline
                             </div>
                         </div>
                     </div>              
                 </div>
                 <div class="three wide right floated column">
-                    <div class="ui search">
+                    <div id="searchInput" class="ui search">
                         <div class="ui fluid icon input">
                             <input class="prompt" type="text" placeholder="Search channels...">
                             <i class="search icon"></i>
@@ -63,7 +63,7 @@
         <div class="ui divider"></div>
         <div class="ui stackable grid">
             <div class="three wide column">
-                <button class="ui fluid positive basic button">
+                <button id="addChannelButton" class="ui fluid positive basic button">
                     <i class="add circle icon"></i>
                     Add Channel
                 </button>
