@@ -8,16 +8,26 @@
     <meta name="description" content="Demonstrates the use of the TwitchTV API">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <link rel="stylesheet" href="css/semantic.min.css">
+    <link rel="stylesheet" href="semantic/dist/semantic.min.css">
     <link rel="stylesheet" href="css/main.css">
 </head>
 
 <body>
     <header class="ui container">
-        <h1 class="appTitle">TwitchTV Monitor</h1>
-        <div class="ui vertically divided stackable grid">
-            <div class="row padding-bottom-0">
-                <div class="three wide column">
+        <div class="hidden ui divider"></div>
+        <h1>TwitchTV Monitor</h1>
+        <div class="hidden ui divider"></div>
+     </header>
+
+    <section class="ui container">
+        <!-- Message Area -->
+        <div id="messageArea">
+        </div>
+
+        <!-- Search and Filter Panel -->
+        <div class="ui stackable grid">
+            <div class="four column row">
+                <div class="left floated column">
                     <div id="filterMenu" class="ui fluid floating labeled icon dropdown button">
                         <i class="filter icon"></i>
                         <span class="text">All</span>
@@ -38,7 +48,7 @@
                         </div>
                     </div>              
                 </div>
-                <div class="three wide right floated column">
+                <div class="right floated column">
                     <div id="searchInput" class="ui search">
                         <div class="ui fluid icon input">
                             <input class="prompt" type="text" placeholder="Search channels...">
@@ -46,29 +56,205 @@
                         </div>
                         <div class="results">
                         </div>
+                    </div>                    
+                </div>
+            </div>
+        </div>        
+        <div class="ui divider"></div>
+        <!-- Search and Filter Panel -->
+
+        <!-- Cards -->
+        <div id="cardsContainer">
+            <div class="ui cards">
+                <div class="card">
+                    <div class="content">
+                        <img class="right floated small bordered ui image" src="https://static-cdn.jtvnw.net/jtv_user_pictures/dallas-profile_image-1a2c906ee2c35f12-300x300.png">
+                        <div class="header">
+                            Dallas
+                        </div>
+                        <div class="meta">
+                            Struggle Bus 5: The Fight to Stay Alive
+                        </div>
+                        <div class="description"><p>
+                            <span class="right floated">
+                                <i class="users icon"></i>
+                                17 followers
+                            </span>
+                            <i class="line chart icon"></i>
+                            45,000 views</p>
+                        </div>
+                    </div>
+                    <div class="extra content">
+                        <button class="ui icon red button">
+                            <i class="trash icon"></i>
+                        </button>
+                        <button class="right floated ui icon olive button">
+                            <i class="external square icon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="content">
+                        <img class="right floated small bordered ui image" src="img/logo.png">
+                        <div class="header">
+                            Dallas
+                        </div>
+                        <div class="meta">
+                        </div>
+                        <div class="description">
+
+                        <div class="ui active dimmer">
+                        <div class="content">
+                            <div class="center">
+                            <div class="ui text loader">Loading</div>
+                            </div>
+                        </div>
+
+                        </div>
+                            <p>
+                                <span class="right floated">
+                                    <i class="users icon"></i>
+                                </span>
+                                <i class="line chart icon"></i>
+                            </p>
+                        </div>
+                    </div>
+                    <div class="extra content">
+                        <button class="ui icon red button">
+                            <i class="trash icon"></i>
+                        </button>
+                        <button class="right floated ui icon olive button">
+                            <i class="external square icon"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="card red">
+                    <div class="content">
+                        <img class="right floated small bordered ui image" src="img/logo.png">
+                        <div class="header">
+                            Dallas
+                        </div>
+                        <div class="center aligned description">
+                            <div class="ui icon tiny header">
+                                <i class="trash icon"></i>
+                                <div class="content">
+                                    Channel Not Found
+                                    <div class="sub header">This channel is no longer available.</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="extra content">
+                        <button class="ui icon red button">
+                            <i class="trash icon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="content">
+                        <img class="right floated small bordered ui image" src="https://static-cdn.jtvnw.net/jtv_user_pictures/dallas-profile_image-1a2c906ee2c35f12-300x300.png">
+                        <div class="header">
+                            Dallas
+                        </div>
+                        <div class="meta">
+                            Struggle Bus 5: The Fight to Stay Alive
+                        </div>
+                        <div class="description"><p>
+                            <span class="right floated">
+                                <i class="users icon"></i>
+                                17 followers
+                            </span>
+                            <i class="line chart icon"></i>
+                            45,000 views</p>
+                        </div>
+                    </div>
+                    <div class="extra content">
+                        <button class="ui icon red button">
+                            <i class="trash icon"></i>
+                        </button>
+                        <button class="right floated ui icon olive button">
+                            <i class="external square icon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="content">
+                        <img class="right floated small bordered ui image" src="https://static-cdn.jtvnw.net/jtv_user_pictures/dallas-profile_image-1a2c906ee2c35f12-300x300.png">
+                        <div class="header">
+                            Dallas
+                        </div>
+                        <div class="meta">
+                            Struggle Bus 5: The Fight to Stay Alive
+                        </div>
+                        <div class="description"><p>
+                            <span class="right floated">
+                                <i class="users icon"></i>
+                                17 followers
+                            </span>
+                            <i class="line chart icon"></i>
+                            45,000 views</p>
+                        </div>
+                    </div>
+                    <div class="extra content">
+                        <button class="ui icon red button">
+                            <i class="trash icon"></i>
+                        </button>
+                        <button class="right floated ui icon olive button">
+                            <i class="external square icon"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="content">
+                        <img class="right floated small bordered ui image" src="https://static-cdn.jtvnw.net/jtv_user_pictures/dallas-profile_image-1a2c906ee2c35f12-300x300.png">
+                        <div class="header">
+                            Dallas
+                        </div>
+                        <div class="meta">
+                            Struggle Bus 5: The Fight to Stay Alive
+                        </div>
+                        <div class="description"><p>
+                            <span class="right floated">
+                                <i class="users icon"></i>
+                                17 followers
+                            </span>
+                            <i class="line chart icon"></i>
+                            45,000 views</p>
+                        </div>
+                    </div>
+                    <div class="extra content">
+                        <button class="ui icon red button">
+                            <i class="trash icon"></i>
+                        </button>
+                        <button class="right floated ui icon olive button">
+                            <i class="external square icon"></i>
+                        </button>
                     </div>
                 </div>
             </div>
-            <div class="row">
-                <div class="column">
-                </div>
-            </div>
         </div>
-     </header>
 
-    <section>
-    </section>
-    
-    <footer class="ui container">
+        <!-- Cards -->
+
+        <!-- Add Channel Panel -->
         <div class="ui divider"></div>
-        <div class="ui stackable grid">
+            <div class="ui stackable grid">
             <div class="three wide column">
-                <button id="addChannelButton" class="ui fluid positive basic button">
+                <button id="addChannelButton" class="ui fluid positive button">
                     <i class="add circle icon"></i>
                     Add Channel
                 </button>
             </div>
         </div>        
+        <!-- Add Channel Panel -->        
+    </section>
+    
+    <footer class="ui container">
     </footer>
 
     <script data-main="js/main" src="js/require.js"></script>

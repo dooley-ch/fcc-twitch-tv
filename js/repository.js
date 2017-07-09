@@ -49,7 +49,7 @@ define("repository", function (require, exports) {
      * @returns {Array} - List of channels held in local storage or default list if none found.
      */
     function _getChannelList () {
-        var defaultList = ["ESL_SC2", "OgamingSC2", "cretetion", "freecodecamp", "storbeck", "habathcx", "RobotCaleb", "noobs2ninjas"];
+        var defaultList = ["ESL_SC2", "OgamingSC2", "cretetion", "freecodecamp", "storbeck", "habathcx", "RobotCaleb", "noobs2ninjas", "medryBW", "codesurge-xyz"];
 
         if (_isLocalStorageAvailable()) {
             var entry = localStorage.getItem("channelList");

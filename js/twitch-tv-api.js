@@ -35,36 +35,6 @@ define("twitch-tv-api", function (require, exports) {
     }
 
     /**
-     * This function creates an object litral containing the data related to a channel
-     * 
-     * @param {Number} id - The channel id
-     * @param {String} language - Channel language
-     * @param {String} displayName  - Display channel name
-     * @param {Number} followers - Number of followers
-     * @param {String} logoUrl - Url for Logo
-     * @param {String} name - Channel Id
-     * @param {String} status - Channel status
-     * @param {Number} viewers - Number of viewers
-     * @param {Date} createdAt - Date channel was created
-     * @param {Date} updatedAt - Date channel was last updated
-     * @returns {object} - An object containing channel related data
-     */
-    function _ChannelInfo(id, language, displayName, followers, logoUrl, name, status, views, createdAt, updatedAt) {
-        return {
-            id: id,
-            language: language,
-            displayName: displayName,
-            followers: followers,
-            logoUrl: logoUrl,
-            name: name,
-            status: status,
-            views: views,
-            createdAt: createdAt,
-            updatedAt: updatedAt
-        };
-    }
-
-    /**
      * This function creates an object literal containing the data related to a stream
      * 
      * @param {Number} id - Stream id
@@ -127,20 +97,24 @@ define("twitch-tv-api", function (require, exports) {
 
         $.getJSON(url).done(function (data) {
             if (_.isFunction(done)) {
-                done(_ChannelInfo(
-                    data._id,
-                    data.language,
-                    data.display_name,
-                    data.followers,
-                    data.logo,
-                    data.name,
-                    data.status,
-                    data.views,
-                    new Date(data.created_at),
-                    new Date(data.updated_at)    
-                ));
+                done({
+                    id: data._id,
+                    name: data.name,
+                    displayName: data.display_name,
+                    status: data.status,
+                    logo: data.logo,
+                    url: data.url,
+                    followers: data.followers,
+                    views: data.views
+                });
             }
         }).fail(function (d, textStatus, error) {
+            if (error === "Bad Request") {
+                if (_.isFunction(done)) {
+                    return done(null);
+                }
+            }
+
             if (_.isFunction(fail)) {
                 fail(error);
             }
@@ -179,8 +153,12 @@ define("twitch-tv-api", function (require, exports) {
         _init(key);
     };
 
-    exports.getStreamInfo = function (d, textStatus, error) {
-        return _getStreamInfo(d, textStatus, error);
+    exports.getStreamInfo = function (name, fail, done) {
+        return _getStreamInfo(name, fail, done);
+    };
+
+    exports.getBroadcasterInfo = function (name, fail, done) {
+        return _getBroadcasterInfo(name, fail, done);
     };
 
     exports.getChannelInfo = function (name, fail, done) {

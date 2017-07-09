@@ -27,6 +27,77 @@ define("app", function (require, exports) {
     var twitchTV = require("twitch-tv-api");
     var repo = require("repository");
 
+    var _channelCache = [];
+
+
+    /**
+     * This function displays an error message at the top of the page
+     * 
+     * @param {String} caption - The message caption 
+     * @param {String} message - The message content
+     * 
+     * @return {void}
+     */
+    function _errorMessage(caption, message) {
+        var msg = "<div class=\"ui negative message\"><div class=\"header\">" + 
+            caption +  "</div><p>" + message + "</p></div><div class=\"hidden ui divider\"></div>";
+
+        $("#messageArea").html(msg);
+    }
+
+    /**
+     * This function sets the initial state of
+     * the channel cache
+     * 
+     * @param {Array} channelList - array of objects containing channel info 
+     */
+    function _setupChannelCache (channelList) {
+        var nextId = 0;
+
+        _.each(channelList, function(channel) {
+            _channelCache.push(
+                {
+                    linkId: ++nextId,
+                    id: 0,
+                    name: channel.title.toLowerCase(),
+                    isChannelInfoLoaded: false,
+                    isStreamInfoLoaded: false,
+                    isStreaming: false,
+                    isMissing: false,
+                    channelInfo: null,
+                    streamInfo: null
+                }
+            );
+        });
+    }
+
+    /**
+     * This function sets the isMissing flag on a channel with the given name
+     * 
+     * @param {String} name - Then name of the given channel 
+     */
+    function _markChannelNotFound(name) {
+        _.each(_channelCache, function(channel) {
+            if (channel.name === name.toLowerCase()) {
+                channel.isMissing = true;
+            }
+        });
+    }
+
+    /**
+     * This function store the channel info in the cache
+     * 
+     * @param {Object} data - The channel info 
+     */
+    function _saveChannelInfo(data) {
+        _.each(_channelCache, function(channel) {
+            if (channel.name === data.name.toLowerCase()) {
+                channel.channelInfo = data;
+                channel.isChannelInfoLoaded = true;
+            }
+        });
+    }
+
     function _showSingleCard(name) {
         alert(name);
     }
@@ -46,6 +117,28 @@ define("app", function (require, exports) {
      * @return {void}
      */
     function _init() {
+        var channels = repo.getSearchableChannelList();
+        _setupChannelCache(channels);
+
+        keys.getKey(function (errorMessage) {
+            _errorMessage("Unable To Obtain API Key", "Reason: " + errorMessage);
+        }, function(key) {
+            twitchTV.init(key);
+
+            _.each(channels, function(channel) {
+                twitchTV.getChannelInfo(channel.title, function(errorMessage) {
+                    _errorMessage("TwitchTV - API Failed (" + channel.title + ")", "Unable to obtain channel data: " + errorMessage);
+                }, function (data) {
+                    if (data) {
+                        _saveChannelInfo(data);
+                        console.log(_channelCache);
+                    } else {
+                        _markChannelNotFound(channel.title);
+                    }
+                });
+            });
+        });
+
         // var channelList = repo.getChannelList();
         // repo.saveChannelList(channelList);
 
@@ -97,7 +190,7 @@ define("app", function (require, exports) {
         }); 
 
         // Setup search
-        var channels = repo.getSearchableChannelList();
+        
         $("#searchInput").search({
             source : channels,
             searchFields   : [ "title"],
