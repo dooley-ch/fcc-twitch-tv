@@ -39,7 +39,7 @@ define("app", function (require, exports) {
      * @return {void}
      */
     function _errorMessage(caption, message) {
-        var msg = "<div class=\"ui negative message\"><div class=\"header\">" + 
+        var msg = "<div class=\"ui negative compact message\"><div class=\"header\">" + 
             caption +  "</div><p>" + message + "</p></div><div class=\"hidden ui divider\"></div>";
 
         $("#messageArea").html(msg);
