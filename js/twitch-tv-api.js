@@ -35,29 +35,6 @@ define("twitch-tv-api", function (require, exports) {
     }
 
     /**
-     * This function creates an object literal containing the data related to a stream
-     * 
-     * @param {Number} id - Stream id
-     * @param {String} game - game name
-     * @param {String} viewers - number of viewers
-     * @param {String} previewSmallUrl - url for stream image
-     * @param {String} previewMediumUrl - url for stream image 
-     * @param {String} previewLargeUrl - url for stream image 
-     * @returns {object} - Contains stream related data
-     */
-    function _StreamInfo(id, game, viewers, streamType, previewSmallUrl, previewMediumUrl, previewLargeUrl) {
-        return {
-            id: id,
-            game: game,
-            viewers: viewers,
-            streamType: streamType,
-            previewSmallUrl: previewSmallUrl,
-            previewMediumUrl: previewMediumUrl,
-            previewLargeUrl: previewLargeUrl 
-        };
-    }
-
-    /**
      * This function returns details about a given stream
      * 
      * @param {String} name - The channel name or ID 
@@ -68,17 +45,32 @@ define("twitch-tv-api", function (require, exports) {
         var url = "https://api.twitch.tv/kraken/streams/" + name+ "?client_id=" + _key;
 
         $.getJSON(url).done(function (data) {
-            var info = null;
+            if (!data.stream) {
+                if (_.isFunction(done)) {
+                    return done(null);
+                } else {
+                    return;
+                }
+            }
+
             var stream = data.stream;
 
-            if (stream) {
-                info = _StreamInfo(stream._id, stream.game, stream.viewers, stream.stream_type, stream.preview.small, stream.preview.medium, stream.preview.large);
-            }
-
             if (_.isFunction(done)) {
-                done(info);
+                done({
+                    id: stream._id,
+                    name: name,
+                    game: stream.game,
+                    previewUrl: stream.preview.small,
+                    viewers: stream.viewers
+                });
             }
         }).fail(function(d, textStatus, error) {
+            if (error === "Bad Request") {
+                if (_.isFunction(done)) {
+                    return done(null);
+                }
+            }
+
             if (_.isFunction(fail)) {
                 fail(error);
             }

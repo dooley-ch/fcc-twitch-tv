@@ -72,30 +72,24 @@ define("app", function (require, exports) {
     }
 
     /**
-     * This function sets the isMissing flag on a channel with the given name
+     * This function gets a channel info reference from the cache
      * 
-     * @param {String} name - Then name of the given channel 
+     * @param {String} name - the channel name 
      */
-    function _markChannelNotFound(name) {
-        _.each(_channelCache, function(channel) {
-            if (channel.name === name.toLowerCase()) {
-                channel.isMissing = true;
+    function _getChannel (name) {
+        for (var i = 0; i < _channelCache.length; i++) {
+            if (_channelCache[i].name === name.toLowerCase()) {
+                return _channelCache[i];
             }
-        });
+        } 
+
+        return null;
     }
 
-    /**
-     * This function store the channel info in the cache
-     * 
-     * @param {Object} data - The channel info 
-     */
-    function _saveChannelInfo(data) {
-        _.each(_channelCache, function(channel) {
-            if (channel.name === data.name.toLowerCase()) {
-                channel.channelInfo = data;
-                channel.isChannelInfoLoaded = true;
-            }
-        });
+    function _displayChannel(channel) {
+        if (channel.isChannelInfoLoaded && channel.isStreamInfoLoaded) {
+            alert("Display channel: " + channel.name);
+        }
     }
 
     function _showSingleCard(name) {
@@ -129,57 +123,39 @@ define("app", function (require, exports) {
                 twitchTV.getChannelInfo(channel.title, function(errorMessage) {
                     _errorMessage("TwitchTV - API Failed (" + channel.title + ")", "Unable to obtain channel data: " + errorMessage);
                 }, function (data) {
+                    var ch = _getChannel(channel.title);
+
                     if (data) {
-                        _saveChannelInfo(data);
-                        console.log(_channelCache);
+                        ch.channelInfo = data;
+                        ch.isChannelInfoLoaded = true;
+
+                        _displayChannel(ch);
                     } else {
-                        _markChannelNotFound(channel.title);
+                        ch.isMissing = true;
+                        ch.isChannelInfoLoaded = true;
+
+                        _displayChannel(ch);
                     }
                 });
+
+                twitchTV.getStreamInfo(channel.title, function(errorMessage) {
+                    _errorMessage("TwitchTV - API Failed (" + channel.title + ")", "Unable to obtain stream data: " + errorMessage);
+                }, function (data) {
+                    var ch = _getChannel(channel.title);
+
+                    if (data) {
+                        ch.streamInfo = data;
+                        ch.isStreamInfoLoaded = true;
+                        ch.isStreaming = true;
+
+                        _displayChannel(ch);
+                    } else {
+                        ch.isStreamInfoLoaded = true;
+                        _displayChannel(ch);
+                    }
+                });                
             });
         });
-
-        // var channelList = repo.getChannelList();
-        // repo.saveChannelList(channelList);
-
-        // repo.addChannel("james");
-        // channelList = repo.getChannelList();
-        // console.log(channelList);
-
-        // repo.removeChannel("james");
-        // channelList = repo.getChannelList();
-        // console.log(channelList);
-        
-        // channelList = repo.getChannelList();
-
-        keys.getKey(function(errorMessage) {
-            console.log(errorMessage);
-        }, function (key) {
-            twitchTV.init(key);
-            // twitchTV.searchForChannels("freecodecamp", function (error) {
-            //     console.log(error); }, function (data) {
-            //     console.log(data);});
-
-            // twitchTV.getChannelInfo("riotgames", function (error) {
-            //     console.log(error);
-            // }, function(data) {
-            //     console.log(data);
-            // });
-
-            // twitchTV.getStreamInfo("OgamingSC2", function (error) {
-            //     console.log(error);
-            // }, function(data) {
-            //     if (data) {
-            //         console.log(data);
-            //     }
-            // });
-        });
-
-        // var channelStatus = twitchTV.getChannelStatus("riotgames");
-        // console.log(channelStatus);
-
-        // var channelInfo = twitchTV.getChannelInfo("riotgames");
-        // console.log(channelInfo);
 
         // Set up filter
         $("#filterMenu").dropdown({
@@ -214,6 +190,4 @@ define("app", function (require, exports) {
 requirejs(["app"], function (app) {
     "use strict";
     app.init();
-
-
 });
