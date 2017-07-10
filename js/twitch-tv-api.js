@@ -101,7 +101,7 @@ define("twitch-tv-api", function (require, exports) {
                 });
             }
         }).fail(function (d, textStatus, error) {
-            if (error === "Bad Request") {
+            if ((error === "Bad Request") || (error === "HTTP/2.0 400")) {
                 if (_.isFunction(done)) {
                     return done(null);
                 }
