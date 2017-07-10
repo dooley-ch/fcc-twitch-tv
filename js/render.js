@@ -3,77 +3,210 @@ define("render", function (require, exports) {
 
     var $ = require("jquery");
     var _ = require("underscore");
-    var doT = require("dot");
 
-    var _buildLoadingCard = doT.template(
-        "<div id=\"card_{{=it.linkId}}\" class=\"card\"><div class=\"content\"><img class=\"right floated small bordered ui image\" src=\"img/logo.png\">" +
-            "<div class=\"header\">{{=it.name}}</div><div class=\"meta\"></div><div class=\"description\"><div class=\"ui active dimmer\">" +
-            "<div class=\"content\"><div class=\"center\"><div class=\"ui text loader\">Loading</div></div></div></div><p><span class=\"right floated\">" +
-            "<i class=\"users icon\"></i></span><i class=\"line chart icon\"></i></p></div></div><div class=\"extra content\"><button class=\"ui icon red button\">" +
-            "<i class=\"trash icon\"></i></button><button class=\"right floated ui icon olive button\"><i class=\"external square icon\"></i></button></div></div>"
-    );
+    var _compileCardContainer;
+    var _compileChannelInfoCard;
+    var _compileLoadingCard;
+    var _compileStreamInfoCard;
+    var _compileDeletedCard;
 
-    var _buildMissingCard = doT.template(
-        "<div id=\"card_{{=it.linkId}}\" class=\"card red\"><div class=\"content\"><img class=\"right floated small bordered ui image\" src=\"img/logo.png\">" +
-            "<div class=\"header\">{{=it.name}}</div><div class=\"center aligned description\"><div class=\"ui icon tiny header\"><i class=\"trash icon\"></i>" +
-            "<div class=\"content\">Channel Not Found<div class=\"sub header\">This channel is no longer available.</div></div></div></div></div>" +
-            "<div class=\"extra content\"><button class=\"ui icon red button\"><i class=\"trash icon\"></i></button></div></div>"
-    );
+    /**
+     * Compiles the templates once for use in displaying 
+     * the content
+     */
+    function _initTemplates () {
+        // ChannelInfo Card
+        var template = $("#channelInfoCardTemplate").html();
+        _compileChannelInfoCard = _.template(template);
 
-    var _buildChannelCard = doT.template(
-        "<div id=\"card_{{=it.linkId}}\" class=\"card\"><div class=\"content\"><img class=\"right floated small bordered ui image\" src=\"{{=it.channelInfo.logo}}\">" +
-            "<div class=\"header\">{{=it.channelInfo.displayName}}</div><div class=\"meta\">{{it.channelInfo.status}}</div><div class=\"description\"><p><span class=\"right floated\">" +
-            "<i class=\"users icon\"></i>{{=it.channelInfo.followers}} followers</span><i class=\"line chart icon\"></i>{{=it.channelInfo.views}} views</p></div></div>" +
-            "<div class=\"extra content\"><button class=\"ui icon red button\"><i class=\"trash icon\"></i></button>" +
-            "<button class=\"right floated ui icon olive button\"><i class=\"external square icon\"></i></button></div></div>"
-    );
+        // StreamInfo Card
+        template = $("#streamInfoCardTemplate").html();
+        _compileStreamInfoCard = _.template(template);
+        
+        // Deleted Card
+        template = $("#missingCardTemplate").html();
+        _compileDeletedCard = _.template(template);
 
-    var _buildStreamingCard = doT.template(
-        "<div id=\"card_{{=it.linkId}}\" class=\"card\"><div class=\"content\"><div class=\"right floated meta\">streaming</div>" +
-            "<img class=\"ui avatar image\" src=\"{{=it.channelInfo.logo}}\">{{=it.channelInfo.displayName}}</div><div class=\"image\">" +
-            "<img src=\"{{=it.streamingInfo.previewUrl}}\"></div><div class=\"content\"><div class=\"description\"><p class=\"ui tiny header\">" +
-            "{{=it.streaming.game}}</p><p><span class=\"right floated\"><i class=\"users icon\"></i>{{=it.streamingInfo.viewers}} viewers</span></p>" +
-            "</div></div><div class=\"extra content\"><button class=\"ui icon red button\"><i class=\"trash icon\"></i></button>" +
-            "<button class=\"right floated ui icon olive button\"><i class=\"external square icon\"></i></button></div></div>"
-    );
+        // Loading Card
+        template = $("#loadingCardTemplate").html();
+        _compileLoadingCard = _.template(template);
 
+        // Card Container
+        template = $("#cardsContainerTemplate").html();
+        _compileCardContainer = _.template(template);
+    }
+
+    /**
+     * Extracts the channel data needed for displaying in the browser
+     * 
+     * @param {Object} channel - The channel to parse 
+     * 
+     * @returns {Object} - Data needed for display
+     */
+    function _parseChannelInfo(channel, trashButtonId, linkButtonId) {
+        var imgUrl = "img/logo.png";
+
+        if (channel.channelInfo.logo) {
+            imgUrl = channel.channelInfo.logo;
+        }
+
+        var data = {
+            name: channel.name,
+            displayName: channel.channelInfo.displayName,
+            logo: imgUrl,
+            status: channel.channelInfo.status,
+            followers: Number(channel.channelInfo.followers).toLocaleString(),
+            views: Number(channel.channelInfo.views).toLocaleString(),
+            trashButtonId: trashButtonId,
+            linkButtonId: linkButtonId
+        };
+
+        return data;
+    }
+
+    /**
+     * Extracts the stream data needed for displaying in the browser
+     * 
+     * @param {Object} channel - The channel to parse 
+     * 
+     * @returns {Object} - Data needed for display
+     */
+    function _parseStreamInfo(channel, trashButtonId, linkButtonId) {
+        var imgUrl = "img/logo.png";
+
+        if (channel.channelInfo.logo) {
+            imgUrl = channel.channelInfo.logo;
+        }
+
+        var data = {
+            name: channel.name,
+            displayName: channel.channelInfo.displayName,
+            logo: imgUrl,
+            game: channel.streamInfo.game,
+            preview: channel.streamInfo.preview, 
+            viewers: Number(channel.streamInfo.viewers).toLocaleString(),
+            trashButtonId: trashButtonId,
+            linkButtonId: linkButtonId
+        };
+
+        return data;
+    }
+
+    /**
+     * Extracts the channel data needed for displaying in the browser
+     * 
+     * @param {Object} channel - The channel to parse 
+     * 
+     * @returns {Object} - Data needed for display
+     */
+    function _parseLoadingInfo(channel) {
+        return {
+            linkId: channel.linkId, 
+            displayName: channel.rawName
+        };
+    }
+
+    function _displaySingleCard(channel) {
+        if (!channel) {
+            return;
+        }
+
+        if (!_compileChannelInfoCard) {
+            _initTemplates();
+        }
+    }
+
+    /**
+     * Displays all channels in the browser in a loading state
+     * 
+     * @param {Array} channels - Channels to display
+     * 
+     * @returns {void}
+     */
     function _showLoadingView(channels) {
-        var html = "<div class=\"ui cards\">";
+        if (!_compileChannelInfoCard) {
+            _initTemplates();
+        }
 
-        _.each(channels, function(channel) {
-            html += _buildLoadingCard(channel);
+        var cards = [];
+
+        _.each(channels, function (channel) {
+            cards.push(_compileLoadingCard(_parseLoadingInfo(channel)));
         });
 
-        html += "</div>";
+        var html = _compileCardContainer({cards: cards.join()});
 
         $("#cardsContainer").html(html);
     }
 
-    function _displayChannel(channel) {
+    /**
+     * Displays the given channel on the grid
+     * 
+     * @param {Object} channel - The channel to display 
+     * 
+     * @returns {void}
+     */
+    function _displayCard(channel, trashIt, linkIt) {
         if (!channel.isChannelInfoLoaded || !channel.isStreamInfoLoaded) {
             return;
         }
 
+        if (!_compileChannelInfoCard) {
+            _initTemplates();
+        }
+
+        var card = $("#" + channel.linkId);
         var html = "";
 
+        var trashButtonId = _.uniqueId("trashButton_");
+        var linkButtonId = _.uniqueId("linkButton_");
+
+        // Clear any visual effects associated with the card as whole
+        card.removeClass("red");
+        card.removeClass("green");
+        card.removeClass("raised");
+
         if (channel.isMissing) {
-            html = _buildMissingCard(channel);
+            html = _compileDeletedCard({
+                name: channel.name,
+                trashButtonId: trashButtonId,
+                displayName: channel.rawName
+            });
+            card.addClass("red");
         } else {
             if (channel.isStreaming) {
-                html = _buildStreamingCard(channel);
+                html = _compileStreamInfoCard(_parseStreamInfo(channel, trashButtonId, linkButtonId));
+                card.addClass("raised green");
             } else {
-                html = _buildChannelCard(channel);
+                html = _compileChannelInfoCard(_parseChannelInfo(channel, trashButtonId, linkButtonId));
             }
         }
              
-        $("#card_" + channel.linkId).html(html);
+        card.html(html);
+
+        // Set the click callbacks
+        $("#" + trashButtonId).click(function(e) { 
+            if (_.isFunction(trashIt)) {
+                trashIt(e);
+            }
+        });
+
+        $("#" + linkButtonId).click(function(e) { 
+            if (_.isFunction(linkIt)) {
+                linkIt(e);
+            }
+        });
     }
 
     exports.showLoadingView = function (channels) {
         return _showLoadingView(channels);
     };
 
-    exports.displayChannel = function (channel) {
-        return _displayChannel(channel);
+    exports.displayCard = function (channel, trashIt, linkId) {
+        return _displayCard(channel, trashIt, linkId);
+    };
+
+    exports.displaySingleCard = function (channel) {
+        return _displaySingleCard(channel);
     };
 });

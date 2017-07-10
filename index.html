@@ -10,6 +10,128 @@
 
     <link rel="stylesheet" href="semantic/dist/semantic.min.css">
     <link rel="stylesheet" href="css/main.css">
+
+    <script id="cardsContainerTemplate" type="text/template">
+        <div class='ui cards'><%= cards %></div>
+    </script>
+
+    <script id="channelInfoCardTemplate" type="text/template">
+        <div class="image">
+            <img src="<%= logo %>">
+        </div>
+        <div class="content">
+            <div class="header"><%= displayName %></div>
+            <div class="hidden ui divider"></div>
+            <div class="description">
+                <p>
+                    <span class="right floated">
+                        <i class="users icon"></i>
+                        <%= followers %> followers
+                    </span>
+                    <i class="line chart icon"></i>
+                    <%= views %> views
+                </p>
+            </div>
+        </div>
+        <div class="extra content">
+            <button id="<%= trashButtonId %>" class="ui icon red button" data-card="<%= name %>">
+                <i class="trash icon"></i>
+            </button>
+            <button id="<%= linkButtonId %>" class="right floated ui icon olive button" data-card="<%= name %>">
+                <i class="external square icon"></i>
+            </button>
+        </div>
+    </script>
+
+    <script id="streamInfoCardTemplate" type="text/template">
+        <div class="content">
+            <div class="right floated meta">streaming</div>
+            <img class="ui avatar image" src="<%= logo %>">
+            <%= displayName %>
+        </div>
+        <div class="image">
+            <img src="<%= preview %>">
+        </div>
+        <div class="content">
+            <div class="description">
+                <p class="ui tiny header">
+                    <%= game %>
+                </p>
+                <div class="hidden ui divider"></div>
+                <p>
+                    <span class="right floated">
+                        <i class="users icon"></i>
+                        <%= viewers %> viewers
+                    </span>
+                </p>
+            </div>
+        </div>
+        <div class="extra content">
+            <button id="<%= trashButtonId %>" class="ui icon red button" data-card="<%= name %>">
+                <i class="trash icon"></i>
+            </button>
+            <button id="<%= linkButtonId %>" class="right floated ui icon olive button" data-card="<%= name %>">
+                <i class="external square icon"></i>
+            </button>
+        </div>
+    </script>
+
+    <script id="missingCardTemplate" type="text/template">
+        <div class="content">
+            <div class="red header"><%= displayName %></div>
+            <div class="hidden ui divider"></div>
+            <div class="description">
+                <h2 class="ui icon header">
+                <i class="trash icon"></i>
+                <div class="content">
+                    Not Found
+                    <div class="sub header">This channel is no longer available.</div>
+                </div>
+                </h2>            
+            </div>
+        </div>
+        <div class="extra content">
+            <button id="<%= trashButtonId %>" class="ui icon red button" data-card="<%= name %>">
+                <i class="trash icon"></i>
+            </button>
+        </div>
+    </script>
+
+    <script id="loadingCardTemplate" type="text/template">
+        <div id='<%= linkId %>' class="card">
+            <div class="content">
+                <img class="right floated small bordered ui image" src="img/logo.png">
+                <div class="header"><%= displayName %></div>
+                <div class="meta">
+                </div>
+                <div class="description">
+
+                <div class="ui active dimmer">
+                <div class="content">
+                    <div class="center">
+                    <div class="ui text loader">Loading</div>
+                    </div>
+                </div>
+
+                </div>
+                    <p>
+                        <span class="right floated">
+                            <i class="users icon"></i>
+                        </span>
+                        <i class="line chart icon"></i>
+                    </p>
+                </div>
+            </div>
+            <div class="extra content">
+                <button class="ui icon red button">
+                    <i class="trash icon"></i>
+                </button>
+                <button class="right floated ui icon olive button">
+                    <i class="external square icon"></i>
+                </button>
+            </div>
+        </div>
+    </script>
 </head>
 
 <body>
@@ -65,182 +187,6 @@
 
         <!-- Cards -->
         <div id="cardsContainer">
-            <div class="ui cards">
-                <div class="card">
-                    <div class="content">
-                        <img class="right floated small bordered ui image" src="https://static-cdn.jtvnw.net/jtv_user_pictures/dallas-profile_image-1a2c906ee2c35f12-300x300.png">
-                        <div class="header">
-                            Dallas
-                        </div>
-                        <div class="meta">
-                            Struggle Bus 5: The Fight to Stay Alive
-                        </div>
-                        <div class="description"><p>
-                            <span class="right floated">
-                                <i class="users icon"></i>
-                                17 followers
-                            </span>
-                            <i class="line chart icon"></i>
-                            45,000 views</p>
-                        </div>
-                    </div>
-                    <div class="extra content">
-                        <button class="ui icon red button">
-                            <i class="trash icon"></i>
-                        </button>
-                        <button class="right floated ui icon olive button">
-                            <i class="external square icon"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="content">
-                        <img class="right floated small bordered ui image" src="img/logo.png">
-                        <div class="header">
-                            Dallas
-                        </div>
-                        <div class="meta">
-                        </div>
-                        <div class="description">
-
-                        <div class="ui active dimmer">
-                        <div class="content">
-                            <div class="center">
-                            <div class="ui text loader">Loading</div>
-                            </div>
-                        </div>
-
-                        </div>
-                            <p>
-                                <span class="right floated">
-                                    <i class="users icon"></i>
-                                </span>
-                                <i class="line chart icon"></i>
-                            </p>
-                        </div>
-                    </div>
-                    <div class="extra content">
-                        <button class="ui icon red button">
-                            <i class="trash icon"></i>
-                        </button>
-                        <button class="right floated ui icon olive button">
-                            <i class="external square icon"></i>
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="card red">
-                    <div class="content">
-                        <img class="right floated small bordered ui image" src="img/logo.png">
-                        <div class="header">
-                            Dallas
-                        </div>
-                        <div class="center aligned description">
-                            <div class="ui icon tiny header">
-                                <i class="trash icon"></i>
-                                <div class="content">
-                                    Channel Not Found
-                                    <div class="sub header">This channel is no longer available.</div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="extra content">
-                        <button class="ui icon red button">
-                            <i class="trash icon"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="content">
-                        <img class="right floated small bordered ui image" src="https://static-cdn.jtvnw.net/jtv_user_pictures/dallas-profile_image-1a2c906ee2c35f12-300x300.png">
-                        <div class="header">
-                            Dallas
-                        </div>
-                        <div class="meta">
-                            Struggle Bus 5: The Fight to Stay Alive
-                        </div>
-                        <div class="description"><p>
-                            <span class="right floated">
-                                <i class="users icon"></i>
-                                17 followers
-                            </span>
-                            <i class="line chart icon"></i>
-                            45,000 views</p>
-                        </div>
-                    </div>
-                    <div class="extra content">
-                        <button class="ui icon red button">
-                            <i class="trash icon"></i>
-                        </button>
-                        <button class="right floated ui icon olive button">
-                            <i class="external square icon"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="content">
-                        <img class="right floated small bordered ui image" src="https://static-cdn.jtvnw.net/jtv_user_pictures/dallas-profile_image-1a2c906ee2c35f12-300x300.png">
-                        <div class="header">
-                            Dallas
-                        </div>
-                        <div class="meta">
-                            Struggle Bus 5: The Fight to Stay Alive
-                        </div>
-                        <div class="description"><p>
-                            <span class="right floated">
-                                <i class="users icon"></i>
-                                17 followers
-                            </span>
-                            <i class="line chart icon"></i>
-                            45,000 views</p>
-                        </div>
-                    </div>
-                    <div class="extra content">
-                        <button class="ui icon red button">
-                            <i class="trash icon"></i>
-                        </button>
-                        <button class="right floated ui icon olive button">
-                            <i class="external square icon"></i>
-                        </button>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="content">
-                        <div class="right floated meta">streaming</div>
-                        <img class="ui avatar image" src="https://static-cdn.jtvnw.net/jtv_user_pictures/dallas-profile_image-1a2c906ee2c35f12-300x300.png">
-                        DansGaming
-                    </div>
-                    <div class="image">
-                        <img src="https://static-cdn.jtvnw.net/previews-ttv/live_user_dansgaming-80x45.jpg">
-                    </div>
-                    <div class="content">
-                        <div class="description">
-                            <p class="ui tiny header">
-                                BATMAN - The Telltale Series
-                            </p>
-                            <p>
-                                <span class="right floated">
-                                    <i class="users icon"></i>
-                                    45,000 viewers
-                                </span>
-                            </p>
-                        </div>
-                    </div>
-                    <div class="extra content">
-                        <button class="ui icon red button">
-                            <i class="trash icon"></i>
-                        </button>
-                        <button class="right floated ui icon olive button">
-                            <i class="external square icon"></i>
-                        </button>
-                    </div>
-                </div>
-            </div>
         </div>
 
         <!-- Cards -->

@@ -11,8 +11,7 @@ requirejs.config({
     paths: {
         jquery: "vendor/jquery-3.2.1.min",
         underscore: "vendor/underscore-1.8.3.min",
-        semantic: "vendor/semantic.min",
-        dot: "vendor/dot.min"
+        semantic: "vendor/semantic.min"
     }
 });
 
@@ -53,14 +52,13 @@ define("app", function (require, exports) {
      * @param {Array} channelList - array of objects containing channel info 
      */
     function _setupChannelCache (channelList) {
-        var nextId = 0;
-
         _.each(channelList, function(channel) {
             _channelCache.push(
                 {
-                    linkId: ++nextId,
+                    linkId: _.uniqueId("card_"),
                     id: 0,
                     name: channel.title.toLowerCase(),
+                    rawName: channel.title,
                     isChannelInfoLoaded: false,
                     isStreamInfoLoaded: false,
                     isStreaming: false,
@@ -72,25 +70,37 @@ define("app", function (require, exports) {
         });
     }
 
+    function _onTrashCanClicked(e) {
+        var channelName = e.currentTarget.dataset["card"];
+
+        if (channelName) {
+            alert("Need to delete card: " + channelName);
+        } else {
+            alert("Screwed again.");
+        }
+    }
+
+    function _onLinkClicked(e) {
+        var channelName = e.currentTarget.dataset["card"];
+
+        if (channelName) {
+            var channel = _getChannel(channelName);
+
+            if (channel) {
+                window.open(channel.channelInfo.url);
+            }
+        }
+    }
+
     /**
      * This function gets a channel info reference from the cache
      * 
      * @param {String} name - the channel name 
      */
     function _getChannel (name) {
-        for (var i = 0; i < _channelCache.length; i++) {
-            if (_channelCache[i].name === name.toLowerCase()) {
-                return _channelCache[i];
-            }
-        } 
-
-        return null;
-    }
-
-    function _scrubChannelInfo(channel) {
-        if (!channel.logo) {
-            channel.logo = "img/logo.png";
-        }
+        return _.find(_channelCache, function(channel) {
+            return channel.name === name.toLowerCase();
+        });
     }
 
     /**
@@ -106,43 +116,49 @@ define("app", function (require, exports) {
 
             _.each(_channelCache, function(channel) {
                 twitchTV.getChannelInfo(channel.name, function(errorMessage) {
-                    _errorMessage("TwitchTV - API Failed (" + channel.name + ")", "Unable to obtain channel data: " + errorMessage);
+                    var msg = "Unable to obtain channel data";
+
+                    if (errorMessage) {
+                        msg = msg + ": " + errorMessage;
+                    }
+
+                    _errorMessage("TwitchTV - API Failed (" + channel.name + ")", msg);
                 }, function (data) {
-                    if (data) {
-                        _scrubChannelInfo(data);
-                        
+                    if (data) {                        
                         channel.channelInfo = data;
                         channel.isChannelInfoLoaded = true;
 
-                        render.displayChannel(channel);
+                        render.displayCard(channel, _onTrashCanClicked, _onLinkClicked);
                     } else {
                         channel.isMissing = true;
                         channel.isChannelInfoLoaded = true;
 
-                        render.displayChannel(channel);
+                        render.displayCard(channel, _onTrashCanClicked, _onLinkClicked);
                     }
                 });
 
-                twitchTV.getStreamInfo(channel.title, function(errorMessage) {
-                    _errorMessage("TwitchTV - API Failed (" + channel.name + ")", "Unable to obtain stream data: " + errorMessage);
+                twitchTV.getStreamInfo(channel.name, function(errorMessage) {
+                    var msg = "Unable to obtain stream data";
+
+                    if (errorMessage) {
+                        msg = msg + ": " + errorMessage;
+                    }
+
+                    _errorMessage("TwitchTV - API Failed (" + channel.name + ")", msg);
                 }, function (data) {
                     if (data) {
                         channel.streamInfo = data;
                         channel.isStreamInfoLoaded = true;
                         channel.isStreaming = true;
 
-                        render.displayChannel(channel);
+                        render.displayCard(channel, _onTrashCanClicked, _onLinkClicked);
                     } else {
                         channel.isStreamInfoLoaded = true;
-                        render.displayChannel(channel);
+                        render.displayCard(channel, _onTrashCanClicked, _onLinkClicked);
                     }
                 });                
             });
         });
-    }
-
-    function _showSingleCard(name) {
-        alert(name);
     }
 
     function _changeFilter(filter) {
@@ -178,7 +194,7 @@ define("app", function (require, exports) {
             searchFields   : [ "title"],
             searchFullText: false,
             onSelect: function (result) {
-                _showSingleCard(result.title);
+                render.displaySingleCard(_getChannel(result.title));
             }
         });
 

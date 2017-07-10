@@ -60,7 +60,7 @@ define("twitch-tv-api", function (require, exports) {
                     id: stream._id,
                     name: name,
                     game: stream.game,
-                    previewUrl: stream.preview.small,
+                    preview: stream.preview.medium,
                     viewers: stream.viewers
                 });
             }
