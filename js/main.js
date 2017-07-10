@@ -11,7 +11,8 @@ requirejs.config({
     paths: {
         jquery: "vendor/jquery-3.2.1.min",
         underscore: "vendor/underscore-1.8.3.min",
-        semantic: "vendor/semantic.min"
+        semantic: "vendor/semantic.min",
+        dot: "vendor/dot.min"
     }
 });
 
@@ -26,9 +27,9 @@ define("app", function (require, exports) {
     var keys = require("keys");
     var twitchTV = require("twitch-tv-api");
     var repo = require("repository");
+    var render = require("render");
 
     var _channelCache = [];
-
 
     /**
      * This function displays an error message at the top of the page
@@ -86,10 +87,58 @@ define("app", function (require, exports) {
         return null;
     }
 
-    function _displayChannel(channel) {
-        if (channel.isChannelInfoLoaded && channel.isStreamInfoLoaded) {
-            alert("Display channel: " + channel.name);
+    function _scrubChannelInfo(channel) {
+        if (!channel.logo) {
+            channel.logo = "img/logo.png";
         }
+    }
+
+    /**
+     * This function performs the initial load
+     * 
+     * @return {void}
+     */
+    function _doInitialLoad() {
+        keys.getKey(function (errorMessage) {
+            _errorMessage("Unable To Obtain API Key", "Reason: " + errorMessage);
+        }, function(key) {
+            twitchTV.init(key);
+
+            _.each(_channelCache, function(channel) {
+                twitchTV.getChannelInfo(channel.name, function(errorMessage) {
+                    _errorMessage("TwitchTV - API Failed (" + channel.name + ")", "Unable to obtain channel data: " + errorMessage);
+                }, function (data) {
+                    if (data) {
+                        _scrubChannelInfo(data);
+                        
+                        channel.channelInfo = data;
+                        channel.isChannelInfoLoaded = true;
+
+                        render.displayChannel(channel);
+                    } else {
+                        channel.isMissing = true;
+                        channel.isChannelInfoLoaded = true;
+
+                        render.displayChannel(channel);
+                    }
+                });
+
+                twitchTV.getStreamInfo(channel.title, function(errorMessage) {
+                    _errorMessage("TwitchTV - API Failed (" + channel.name + ")", "Unable to obtain stream data: " + errorMessage);
+                }, function (data) {
+                    if (data) {
+                        channel.streamInfo = data;
+                        channel.isStreamInfoLoaded = true;
+                        channel.isStreaming = true;
+
+                        render.displayChannel(channel);
+                    } else {
+                        channel.isStreamInfoLoaded = true;
+                        render.displayChannel(channel);
+                    }
+                });                
+            });
+        });
     }
 
     function _showSingleCard(name) {
@@ -113,49 +162,7 @@ define("app", function (require, exports) {
     function _init() {
         var channels = repo.getSearchableChannelList();
         _setupChannelCache(channels);
-
-        keys.getKey(function (errorMessage) {
-            _errorMessage("Unable To Obtain API Key", "Reason: " + errorMessage);
-        }, function(key) {
-            twitchTV.init(key);
-
-            _.each(channels, function(channel) {
-                twitchTV.getChannelInfo(channel.title, function(errorMessage) {
-                    _errorMessage("TwitchTV - API Failed (" + channel.title + ")", "Unable to obtain channel data: " + errorMessage);
-                }, function (data) {
-                    var ch = _getChannel(channel.title);
-
-                    if (data) {
-                        ch.channelInfo = data;
-                        ch.isChannelInfoLoaded = true;
-
-                        _displayChannel(ch);
-                    } else {
-                        ch.isMissing = true;
-                        ch.isChannelInfoLoaded = true;
-
-                        _displayChannel(ch);
-                    }
-                });
-
-                twitchTV.getStreamInfo(channel.title, function(errorMessage) {
-                    _errorMessage("TwitchTV - API Failed (" + channel.title + ")", "Unable to obtain stream data: " + errorMessage);
-                }, function (data) {
-                    var ch = _getChannel(channel.title);
-
-                    if (data) {
-                        ch.streamInfo = data;
-                        ch.isStreamInfoLoaded = true;
-                        ch.isStreaming = true;
-
-                        _displayChannel(ch);
-                    } else {
-                        ch.isStreamInfoLoaded = true;
-                        _displayChannel(ch);
-                    }
-                });                
-            });
-        });
+        render.showLoadingView(_channelCache);
 
         // Set up filter
         $("#filterMenu").dropdown({
@@ -165,8 +172,7 @@ define("app", function (require, exports) {
             }
         }); 
 
-        // Setup search
-        
+        // Setup search        
         $("#searchInput").search({
             source : channels,
             searchFields   : [ "title"],
@@ -180,6 +186,9 @@ define("app", function (require, exports) {
         $("#addChannelButton").click(function (){
             _getNewChannelFromUser();
         });
+
+        // Setup the initial load
+        setTimeout(_doInitialLoad, 1000);
     }
 
     exports.init = function () {

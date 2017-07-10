@@ -149,10 +149,6 @@ define("twitch-tv-api", function (require, exports) {
         return _getStreamInfo(name, fail, done);
     };
 
-    exports.getBroadcasterInfo = function (name, fail, done) {
-        return _getBroadcasterInfo(name, fail, done);
-    };
-
     exports.getChannelInfo = function (name, fail, done) {
         return _getChannelInfo(name, fail, done);
     };
