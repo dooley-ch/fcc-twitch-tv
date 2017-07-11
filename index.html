@@ -44,12 +44,16 @@
             </div>
         </div>
         <div class="extra content">
-            <button id="<%= trashButtonId %>" class="ui icon red button" data-card="<%= name %>">
-                <i class="trash icon"></i>
-            </button>
-            <button id="<%= linkButtonId %>" class="right floated ui icon olive button" data-card="<%= name %>">
-                <i class="external square icon"></i>
-            </button>
+            <div class="ui two buttons">
+                <button id="<%= trashButtonId %>" class="ui icon red button" data-card="<%= name %>">
+                    <i class="trash icon"></i>
+                    Delete
+                </button>
+                <button id="<%= linkButtonId %>" class="ui icon olive button" data-card="<%= name %>">
+                    <i class="external square icon"></i>
+                    Visit
+                </button>
+            </div>
         </div>
     </script>
 
@@ -77,11 +81,14 @@
             </div>
         </div>
         <div class="extra content">
-            <button id="<%= trashButtonId %>" class="ui icon red button" data-card="<%= name %>">
-                <i class="trash icon"></i>
-            </button>
-            <button id="<%= linkButtonId %>" class="right floated ui icon olive button" data-card="<%= name %>">
+            <div class="ui two buttons">
+                <button id="<%= trashButtonId %>" class="ui icon red button" data-card="<%= name %>">
+                    <i class="trash icon"></i>
+                    Delete
+                </button>
+            <button id="<%= linkButtonId %>" class="ui icon olive button" data-card="<%= name %>">
                 <i class="external square icon"></i>
+                Visit
             </button>
         </div>
     </script>
@@ -101,8 +108,8 @@
             </div>
         </div>
         <div class="extra content">
-            <button id="<%= trashButtonId %>" class="ui icon red button" data-card="<%= name %>">
-                <i class="trash icon"></i>
+            <button id="<%= trashButtonId %>" class="ui icon red fluid button" data-card="<%= name %>">
+                <i class="trash icon"></i> Delete
             </button>
         </div>
     </script>
@@ -237,6 +244,15 @@
 
     <footer class="ui container">
         <div class="ui divider"></div>
+        <div id="resetButton" class="ui vertical animated violet button" tabindex="0">
+            <div class="hidden content">
+                Reset
+            </div>
+            <div class="visible content">
+                <i class="large setting icon"></i>
+            </div>
+        </div>
+        <div class="ui hidden divider"></div>
     </footer>
 
     <script data-main="js/main" src="js/require.js"></script>

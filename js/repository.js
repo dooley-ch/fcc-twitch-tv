@@ -3,6 +3,8 @@ define("repository", function (require, exports) {
 
     var _ = require("underscore");
 
+    var _defaultList = ["ESL_SC2", "OgamingSC2", "cretetion", "freecodecamp", "storbeck", "habathcx", "RobotCaleb", "noobs2ninjas", "medryBW", "codesurge-xyz"];
+
     /**
      * This function checks if the users browser supports local storage
      * 
@@ -49,22 +51,19 @@ define("repository", function (require, exports) {
      * @returns {Array} - List of channels held in local storage or default list if none found.
      */
     function _getChannelList () {
-        var defaultList = ["ESL_SC2", "OgamingSC2", "cretetion", "freecodecamp", "storbeck", "habathcx", "RobotCaleb", "noobs2ninjas", "medryBW", "codesurge-xyz"];
-
         if (_isLocalStorageAvailable()) {
             var entry = localStorage.getItem("channelList");
 
             if (entry) {
                 return JSON.parse(entry);
             } else {
-                return defaultList;
+                return _defaultList;
             }        
         }
 
-        return defaultList;
+        return _defaultList;
     }
 
-    
     /**
      * This function converts the standard list of channels into a tuype suitable for use
      * in the search input control
@@ -132,6 +131,14 @@ define("repository", function (require, exports) {
         }
     }
 
+    /**
+     * This function restores the test data to it's original state
+     * 
+     */
+    function _reset() {
+        _saveChannelList(_defaultList);
+    }
+
     exports.getChannelList = function () {
         return _getChannelList();
     };
@@ -150,5 +157,9 @@ define("repository", function (require, exports) {
 
     exports.removeChannel = function (name, fail, done) {
         return _removeChannel(name, fail, done);
+    };
+
+    exports.reset = function () {
+        _reset();
     };
 });

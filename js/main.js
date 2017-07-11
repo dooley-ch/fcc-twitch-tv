@@ -37,6 +37,8 @@ define("app", function (require, exports) {
      * @param {Array} channelList - array of objects containing channel info 
      */
     function _setupChannelCache (channelList) {
+        _channelCache = [];
+
         _.each(channelList, function(channel) {
             _channelCache.push(
                 {
@@ -55,6 +57,12 @@ define("app", function (require, exports) {
         });
     }
 
+
+    /**
+     *  Event raised when the user clicks on the delete button on a card
+     * 
+     * @param {Object} e - The object associated with the click event 
+     */
     function _onTrashCanClicked(e) {
         var channelName = e.currentTarget.dataset.card;
 
@@ -68,6 +76,12 @@ define("app", function (require, exports) {
         }
     }
 
+    /**
+     * This event is raised when the user confirms that they wish to
+     * delete the given channel. 
+     * 
+     * @param {Object} e - The object associated with the click event
+     */
     function _onConfirmDeleteChannel(e) {
         var channelName = e.currentTarget.dataset.card;
         
@@ -83,6 +97,12 @@ define("app", function (require, exports) {
         }
     }
 
+    /**
+     * Raised when the user clicks on the link button .  The function redirects
+     * to the related TwitchTV channel.
+     * 
+     * @param {Object} e - The object associated with the click event
+     */
     function _onLinkClicked(e) {
         var channelName = e.currentTarget.dataset.card;
 
@@ -99,6 +119,8 @@ define("app", function (require, exports) {
      * This function gets a channel info reference from the cache
      * 
      * @param {String} name - the channel name 
+     * 
+     * @return {Object} - The related channel
      */
     function _getChannel (name) {
         return _.find(_channelCache, function(channel) {
@@ -164,6 +186,13 @@ define("app", function (require, exports) {
         });
     }
 
+    /**
+     * Called when the user changes the data filter.  This function
+     * obtains the list of channels matching the filter and calls the
+     * render method to load the data into the page
+     * 
+     * @return {void}
+     */
     function _changeFilter(filter) {
         var channels = [];
 
@@ -193,15 +222,24 @@ define("app", function (require, exports) {
     }
 
     /**
+     * Sets up the data for display on the page
+     * 
+     * @return {void}
+     */
+    function _initPage() {
+        var channels = repo.getSearchableChannelList();
+        _setupChannelCache(channels);
+        render.showLoadingView(_channelCache);
+    }
+
+    /**
      * This funtion initializes the application 
      * and displays the weather data on the screen
      * 
      * @return {void}
      */
     function _init() {
-        var channels = repo.getSearchableChannelList();
-        _setupChannelCache(channels);
-        render.showLoadingView(_channelCache);
+        _initPage();
 
         // Set up filter
         $("#filterMenu").dropdown({
@@ -213,7 +251,7 @@ define("app", function (require, exports) {
 
         // Setup search        
         $("#searchInput").search({
-            source : channels,
+            source : repo.getSearchableChannelList(),
             searchFields   : [ "title"],
             searchFullText: false,
             onSelect: function (result) {
@@ -223,6 +261,14 @@ define("app", function (require, exports) {
 
         // Wire up confirm delete dialog
         $("#confirmDeleteButton").click(_onConfirmDeleteChannel);
+
+        // Wire up the reset button
+        $("#resetButton").click(function () {
+            repo.reset();
+            _initPage();
+            _doInitialLoad();
+            $("#resetButton").blur();
+        });
 
         // Setup the initial load
         setTimeout(_doInitialLoad, 1000);

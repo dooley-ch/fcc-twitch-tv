@@ -125,6 +125,13 @@ define("render", function (require, exports) {
         };
     }
 
+    /**
+     * This function displays the given channel
+     * 
+     * @param {Object} channel - The channel to display
+     *  
+     * @returns {void} 
+     */
     function _displaySingleCard(channel) {
         if (!channel) {
             return;
@@ -242,6 +249,11 @@ define("render", function (require, exports) {
         });
     }
 
+    /**
+     * This function displays the given list of channels on the page
+     * 
+     * @param {Array} channels - List of channels to display 
+     */
     function _reDisplayCards(channels) {
         var cardsHtml = [];
 
@@ -277,10 +289,21 @@ define("render", function (require, exports) {
         $("#cardsContainer").html(html);
     }
 
+    /**
+     * This function hides the given card on page
+     * 
+     * @param {Object} channel - The channel to hide 
+     */
     function _deleteCard(channel) {
         $("#" + channel.linkId).hide();
     }
 
+    /**
+     * This function displays a message on the page
+     * 
+     * @param {String} title - The dialog title
+     * @param {String} message - The dialog message
+     */
     function _displaySuccessMessage(title, message) {
         var html = _compileMessage({title: title, messageType: "success", message: message});
 
@@ -291,6 +314,12 @@ define("render", function (require, exports) {
         });
     }
 
+    /**
+     * This function displays a message on the page
+     * 
+     * @param {String} title - The dialog title
+     * @param {String} message - The dialog message
+     */
     function _displayFailedMessage(title, message) {
         var html = _compileMessage({title: title, messageType: "negative", message: message});
 
