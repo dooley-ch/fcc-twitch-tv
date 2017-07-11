@@ -5,18 +5,29 @@ define("render", function (require, exports) {
     var _ = require("underscore");
 
     var _compileCardContainer;
+    var _compileCenteredCardContainer;
+    var _compileCardHolder;
+
     var _compileChannelInfoCard;
     var _compileLoadingCard;
     var _compileStreamInfoCard;
     var _compileDeletedCard;
+
+    var _compileMessage;
 
     /**
      * Compiles the templates once for use in displaying 
      * the content
      */
     function _initTemplates () {
+        var template;
+
+        // Success message 
+        template = $("#messsageTemplate").html();
+        _compileMessage = _.template(template);
+
         // ChannelInfo Card
-        var template = $("#channelInfoCardTemplate").html();
+        template = $("#channelInfoCardTemplate").html();
         _compileChannelInfoCard = _.template(template);
 
         // StreamInfo Card
@@ -34,6 +45,14 @@ define("render", function (require, exports) {
         // Card Container
         template = $("#cardsContainerTemplate").html();
         _compileCardContainer = _.template(template);
+
+        // Centered Card Container
+        template = $("#centeredCardContainerTemplate").html();
+        _compileCenteredCardContainer = _.template(template);
+
+        // Card holder
+        template = $("#cardContentHolderTemplate").html();
+        _compileCardHolder = _.template(template);
     }
 
     /**
@@ -114,6 +133,31 @@ define("render", function (require, exports) {
         if (!_compileChannelInfoCard) {
             _initTemplates();
         }
+
+        var content;
+        var actionClass = "";
+
+        var trashButtonId = _.uniqueId("trashButton_");
+        var linkButtonId = _.uniqueId("linkButton_");
+
+        if (channel.isMissing) {
+            content = _compileDeletedCard({
+                name: channel.name,
+                trashButtonId: trashButtonId,
+                displayName: channel.rawName
+            });
+            actionClass = "red";
+        } else {
+            if (channel.isStreaming) {
+                content = _compileStreamInfoCard(_parseStreamInfo(channel, trashButtonId, linkButtonId));
+                actionClass = "raised green";
+            } else {
+                content = _compileChannelInfoCard(_parseChannelInfo(channel, trashButtonId, linkButtonId));
+            }
+        }
+        
+        var html = _compileCenteredCardContainer({actionClass: actionClass, cardContent: content});
+        $("#cardsContainer").html(html);
     }
 
     /**
@@ -134,7 +178,7 @@ define("render", function (require, exports) {
             cards.push(_compileLoadingCard(_parseLoadingInfo(channel)));
         });
 
-        var html = _compileCardContainer({cards: cards.join()});
+        var html = _compileCardContainer({cards: cards.join("")});
 
         $("#cardsContainer").html(html);
     }
@@ -146,7 +190,7 @@ define("render", function (require, exports) {
      * 
      * @returns {void}
      */
-    function _displayCard(channel, trashIt, linkIt) {
+    function _displayCardContent(channel, trashIt, linkIt) {
         if (!channel.isChannelInfoLoaded || !channel.isStreamInfoLoaded) {
             return;
         }
@@ -198,15 +242,90 @@ define("render", function (require, exports) {
         });
     }
 
+    function _reDisplayCards(channels) {
+        var cardsHtml = [];
+
+        _.each(channels, function(channel) {
+            var content = "";
+            var actionClass = "";
+
+            var trashButtonId = _.uniqueId("trashButton_");
+            var linkButtonId = _.uniqueId("linkButton_");
+
+            if (channel.isMissing) {
+                content = _compileDeletedCard({
+                    name: channel.name,
+                    trashButtonId: trashButtonId,
+                    displayName: channel.rawName
+                });
+                actionClass = "red";
+            } else {
+                if (channel.isStreaming) {
+                    content = _compileStreamInfoCard(_parseStreamInfo(channel, trashButtonId, linkButtonId));
+                    actionClass = "raised green";
+                } else {
+                    content = _compileChannelInfoCard(_parseChannelInfo(channel, trashButtonId, linkButtonId));
+                }
+            }
+
+            var html = _compileCardHolder({linkId: channel.linkId, actionClass: actionClass, content: content});
+            cardsHtml.push(html);
+        });
+
+        var html = _compileCardContainer({cards: cardsHtml.join("")});
+
+        $("#cardsContainer").html(html);
+    }
+
+    function _deleteCard(channel) {
+        $("#" + channel.linkId).hide();
+    }
+
+    function _displaySuccessMessage(title, message) {
+        var html = _compileMessage({title: title, messageType: "success", message: message});
+
+        $("#messageArea").html(html);
+
+        $(".message .close").on("click", function() {
+            $(this).closest(".message").transition("fade");
+        });
+    }
+
+    function _displayFailedMessage(title, message) {
+        var html = _compileMessage({title: title, messageType: "negative", message: message});
+
+        $("#messageArea").html(html);
+
+        $(".message .close").on("click", function() {
+            $(this).closest(".message").transition("fade");
+        });
+    }
+
     exports.showLoadingView = function (channels) {
         return _showLoadingView(channels);
     };
 
-    exports.displayCard = function (channel, trashIt, linkId) {
-        return _displayCard(channel, trashIt, linkId);
+    exports.displayCardContent = function (channel, trashIt, linkId) {
+        return _displayCardContent(channel, trashIt, linkId);
     };
 
     exports.displaySingleCard = function (channel) {
         return _displaySingleCard(channel);
+    };
+
+    exports.reDisplayCards = function (channels) {
+        return _reDisplayCards(channels);
+    };
+
+    exports.deleteCard = function (channel) {
+        return _deleteCard(channel);
+    };
+
+    exports.displaySuccessMessage = function (title, message) {
+        return _displaySuccessMessage(title, message);
+    };
+
+    exports.displayFailedMessage = function (title, message) {
+        return _displayFailedMessage(title, message);
     };
 });

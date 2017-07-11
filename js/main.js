@@ -31,21 +31,6 @@ define("app", function (require, exports) {
     var _channelCache = [];
 
     /**
-     * This function displays an error message at the top of the page
-     * 
-     * @param {String} caption - The message caption 
-     * @param {String} message - The message content
-     * 
-     * @return {void}
-     */
-    function _errorMessage(caption, message) {
-        var msg = "<div class=\"ui negative compact message\"><div class=\"header\">" + 
-            caption +  "</div><p>" + message + "</p></div><div class=\"hidden ui divider\"></div>";
-
-        $("#messageArea").html(msg);
-    }
-
-    /**
      * This function sets the initial state of
      * the channel cache
      * 
@@ -71,17 +56,35 @@ define("app", function (require, exports) {
     }
 
     function _onTrashCanClicked(e) {
-        var channelName = e.currentTarget.dataset["card"];
+        var channelName = e.currentTarget.dataset.card;
 
         if (channelName) {
-            alert("Need to delete card: " + channelName);
-        } else {
-            alert("Screwed again.");
+            var channel = _getChannel(channelName);
+
+            $("#deletePrompt").text("Delete Channel - " + channel.rawName);
+            $("#confirmDeleteButton").attr("data-card", channelName);
+
+            $("#deleteCardDlg").modal("show");
+        }
+    }
+
+    function _onConfirmDeleteChannel(e) {
+        var channelName = e.currentTarget.dataset.card;
+        
+        if (channelName) {
+            var channel = _getChannel(channelName);
+            render.deleteCard(channel);
+
+            repo.removeChannel(channel.rawName, function() {
+                render.displayFailedMessage("Channel Deleted", "Unable to remove the channel at this time");
+            }, function () {
+                render.displaySuccessMessage("Channel Deleted", "The channel was successfully deleted.");
+            });
         }
     }
 
     function _onLinkClicked(e) {
-        var channelName = e.currentTarget.dataset["card"];
+        var channelName = e.currentTarget.dataset.card;
 
         if (channelName) {
             var channel = _getChannel(channelName);
@@ -110,7 +113,7 @@ define("app", function (require, exports) {
      */
     function _doInitialLoad() {
         keys.getKey(function (errorMessage) {
-            _errorMessage("Unable To Obtain API Key", "Reason: " + errorMessage);
+            render.displayFailedMessage("Unable To Obtain API Key", "Reason: " + errorMessage);
         }, function(key) {
             twitchTV.init(key);
 
@@ -122,18 +125,18 @@ define("app", function (require, exports) {
                         msg = msg + ": " + errorMessage;
                     }
 
-                    _errorMessage("TwitchTV - API Failed (" + channel.name + ")", msg);
+                    render.displayFailedMessage("TwitchTV - API Failed (" + channel.name + ")", msg);
                 }, function (data) {
                     if (data) {                        
                         channel.channelInfo = data;
                         channel.isChannelInfoLoaded = true;
 
-                        render.displayCard(channel, _onTrashCanClicked, _onLinkClicked);
+                        render.displayCardContent(channel, _onTrashCanClicked, _onLinkClicked);
                     } else {
                         channel.isMissing = true;
                         channel.isChannelInfoLoaded = true;
 
-                        render.displayCard(channel, _onTrashCanClicked, _onLinkClicked);
+                        render.displayCardContent(channel, _onTrashCanClicked, _onLinkClicked);
                     }
                 });
 
@@ -144,17 +147,17 @@ define("app", function (require, exports) {
                         msg = msg + ": " + errorMessage;
                     }
 
-                    _errorMessage("TwitchTV - API Failed (" + channel.name + ")", msg);
+                    render.displayFailedMessage("TwitchTV - API Failed (" + channel.name + ")", msg);
                 }, function (data) {
                     if (data) {
                         channel.streamInfo = data;
                         channel.isStreamInfoLoaded = true;
                         channel.isStreaming = true;
 
-                        render.displayCard(channel, _onTrashCanClicked, _onLinkClicked);
+                        render.displayCardContent(channel, _onTrashCanClicked, _onLinkClicked);
                     } else {
                         channel.isStreamInfoLoaded = true;
-                        render.displayCard(channel, _onTrashCanClicked, _onLinkClicked);
+                        render.displayCardContent(channel, _onTrashCanClicked, _onLinkClicked);
                     }
                 });                
             });
@@ -162,11 +165,31 @@ define("app", function (require, exports) {
     }
 
     function _changeFilter(filter) {
-        alert("Change filter: " + filter);
-    }
+        var channels = [];
 
-    function _getNewChannelFromUser() {
-        alert("Get new channel");
+        if (filter === "all") {
+            channels = _channelCache;
+        }
+
+        if (filter == "online") {
+            channels = _.filter(_channelCache, function (ch) {
+                return ch.isStreaming === true;
+            });
+        }
+
+        if (filter === "offline") {
+            channels = _.filter(_channelCache, function (ch) {
+                return (ch.isStreaming != true) && (ch.isMissing != true);
+            });
+        }
+
+        if (filter === "deleted") {
+            channels = _.filter(_channelCache, function (ch) {
+                return ch.isMissing === true;
+            });            
+        }
+
+        render.reDisplayCards(channels);
     }
 
     /**
@@ -198,10 +221,8 @@ define("app", function (require, exports) {
             }
         });
 
-        // Setup the add channel button
-        $("#addChannelButton").click(function (){
-            _getNewChannelFromUser();
-        });
+        // Wire up confirm delete dialog
+        $("#confirmDeleteButton").click(_onConfirmDeleteChannel);
 
         // Setup the initial load
         setTimeout(_doInitialLoad, 1000);

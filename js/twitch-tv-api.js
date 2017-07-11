@@ -101,6 +101,12 @@ define("twitch-tv-api", function (require, exports) {
                 });
             }
         }).fail(function (d, textStatus, error) {
+            _searchForChannels(name, function() {
+                            if (_.isFunction(fail)) {
+                fail(error);
+            }
+
+            })
             if ((error === "Bad Request") || (error === "HTTP/2.0 400")) {
                 if (_.isFunction(done)) {
                     return done(null);

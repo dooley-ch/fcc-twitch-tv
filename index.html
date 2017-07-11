@@ -8,13 +8,23 @@
     <meta name="description" content="Demonstrates the use of the TwitchTV API">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <link rel="apple-touch-icon" href="apple-touch-icon.png">
+
     <link rel="stylesheet" href="css/semantic.min.css">
     <link rel="stylesheet" href="css/main.css">
 
+    <script id="centeredCardContainerTemplate" type="text/template">
+        <div class="ui centered <%= actionClass %> card"><%= cardContent %></div>
+    </script>
+    
     <script id="cardsContainerTemplate" type="text/template">
-        <div class='ui cards'><%= cards %></div>
+        <div class='ui centered cards'><%= cards %></div>
     </script>
 
+    <script id="cardContentHolderTemplate" type="text/template">
+        <div id='<%= linkId %>' class="<%= actionClass %> card"><%= content %></div>
+    </script>
+    
     <script id="channelInfoCardTemplate" type="text/template">
         <div class="image">
             <img src="<%= logo %>">
@@ -132,12 +142,26 @@
             </div>
         </div>
     </script>
+
+    <script id="messsageTemplate" type="text/template">
+        <div class="ui <%= messageType %> message">
+            <i class="close icon"></i>
+            <div class="header">
+                <%= title %>
+            </div>
+            <p><%= message %></p>
+        </div>
+        <div class="hidden ui divider"></div>
+    </script>
 </head>
 
 <body>
     <header class="ui container">
         <div class="hidden ui divider"></div>
-        <h1>TwitchTV Monitor</h1>
+        <h1 class="ui header">
+            <img src="img/TV120.png" class="ui bottom aligned rounded image">
+            TwitchTV Monitor
+        </h1>
         <div class="hidden ui divider"></div>
      </header>
 
@@ -167,6 +191,9 @@
                             <div class="item">
                                 Offline
                             </div>
+                            <div class="item">
+                                Deleted
+                            </div>
                         </div>
                     </div>              
                 </div>
@@ -188,23 +215,28 @@
         <!-- Cards -->
         <div id="cardsContainer">
         </div>
-
         <!-- Cards -->
-
-        <!-- Add Channel Panel -->
-        <div class="ui divider"></div>
-            <div class="ui stackable grid">
-            <div class="three wide column">
-                <button id="addChannelButton" class="ui fluid positive button">
-                    <i class="add circle icon"></i>
-                    Add Channel
-                </button>
-            </div>
-        </div>        
-        <!-- Add Channel Panel -->        
     </section>
     
+    <div id="deleteCardDlg" class="ui basic modal">
+        <div class="ui icon header">
+            <i class="trash icon"></i>
+            <span id="deletePrompt">DELETE CARD</span> 
+        </div>
+        <div class="actions">
+            <div class="ui red basic cancel inverted button">
+                <i class="remove icon"></i>
+                No
+            </div>
+            <div id="confirmDeleteButton" class="ui green ok inverted button">
+                <i class="checkmark icon"></i>
+                Yes
+            </div>
+        </div>
+    </div>
+
     <footer class="ui container">
+        <div class="ui divider"></div>
     </footer>
 
     <script data-main="js/main" src="js/require.js"></script>
